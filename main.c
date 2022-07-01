@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <stdbool.h>
 
+// for storing a line of tex from /proc/stat
 #define MAX_LINE_SIZE 128
 
 char *read_stat()
