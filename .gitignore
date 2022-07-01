@@ -14,3 +14,4 @@ CMakeDoxyfile.in
 CMakeDoxygenDefaults.cmake
 CPackConfig.cmake
 CPackSourceConfig.cmake
+.vscode
