@@ -1,12 +1,9 @@
+
+#include "Reader.h"
+
 #include <stdlib.h>
 #include <stdio.h>
-#include <signal.h>
 #include <string.h>
-#include <unistd.h>
-#include <stdbool.h>
-
-// for storing a line of tex from /proc/stat
-#define MAX_LINE_SIZE 128
 
 char *read_stat()
 {
@@ -65,15 +62,4 @@ char *read_stat()
     fclose(file);
 
     return data;
-}
-
-int main(int argc, char *argv[])
-{
-    char *raw_data = read_stat();
-
-    printf("%s", raw_data);
-
-    free(raw_data);
-
-    return 0;
 }
