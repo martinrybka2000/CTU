@@ -36,7 +36,7 @@ int queue_push(struct queue *q, char *data)
         if (q->head == NULL)
         {
             q->head = n;
-            q->head = n;
+            q->tail = n;
         }
         else
         {

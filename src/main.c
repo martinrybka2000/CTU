@@ -10,16 +10,19 @@
 
 int main(void)
 {
+
+    struct queue *q = queue_new();
+
     for (size_t i = 0; i < 10; i++)
     {
-        char *raw_data = read_stat();
+        queue_push(q, read_stat());
 
-        printf("%s", raw_data);
-
-        free(raw_data);
+        printf("%s\n", queue_pop_head(q));
 
         sleep(1);
     }
+
+    queue_free_all(q);
 
     return 0;
 }
