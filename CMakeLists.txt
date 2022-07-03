@@ -5,6 +5,8 @@ project(cut VERSION 1.0
 
 set(CMAKE_C_STANDARD 11)
 
+find_package(Curses REQUIRED)
+include_directories(${CURSES_INCLUDE_DIR})
 
 add_executable(
     cut 
@@ -14,7 +16,9 @@ add_executable(
     src/Queue.c
     src/Analyzer.c
     src/core_counter.c
+    src/Printer.c
     )
 
+target_link_libraries(cut ${CURSES_LIBRARIES})
 target_include_directories(cut PRIVATE src)
 

@@ -9,6 +9,7 @@
 #include "Reader.h"
 #include "Queue.h"
 #include "Analyzer.h"
+#include "Printer.h"
 #include "core_counter.h"
 
 int main(void)
@@ -17,6 +18,7 @@ int main(void)
 
     count_cores(&core_cnt);
 
+    Printer_init();
     struct queue *q = queue_new();
 
     struct Analyzer *analyzer = Analyzer_new(core_cnt + 1, q);
@@ -27,18 +29,14 @@ int main(void)
 
         Analyzer_calc_usage(analyzer);
 
-        printf("cpu all usage: %f %%\n", analyzer->cpu_usage[0] * 100);
-        for (int j = 1; j < core_cnt + 1; j++)
-        {
-            printf("\tcpu%d usage: %f %%\n", j - 1, analyzer->cpu_usage[j] * 100);
-        }
-        printf("\n");
+        Print(analyzer);
 
-        thrd_sleep(&(struct timespec){.tv_sec = 1}, NULL); // sleep 100ms
+        thrd_sleep(&(struct timespec){.tv_sec = 1}, NULL); // sleep 1s
     }
 
     queue_free_all(q);
     Analyzer_free(analyzer);
+    Printed_close();
 
     return 0;
 }
