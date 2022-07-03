@@ -12,6 +12,7 @@ add_executable(
     src/main.c
     src/Reader.c
     src/Queue.c
+    src/Analyzer.c
     )
 
 target_include_directories(cut PRIVATE src)
