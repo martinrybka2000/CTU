@@ -5,13 +5,14 @@ project(cut VERSION 1.0
 
 set(CMAKE_C_STANDARD 11)
 
+
 add_executable(
     cut 
     
     src/main.c
     src/Reader.c
+    src/Queue.c
     )
 
 target_include_directories(cut PRIVATE src)
-
 

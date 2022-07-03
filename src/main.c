@@ -6,8 +6,9 @@
 #include <stdbool.h>
 
 #include "Reader.h"
+#include "Queue.h"
 
-int main(int argc, char *argv[])
+int main(void)
 {
     for (size_t i = 0; i < 10; i++)
     {
