@@ -13,9 +13,22 @@
 #include "Printer.h"
 #include "core_counter.h"
 
-//
+volatile sig_atomic_t done = 0;
+
+void term(int signum)
+{
+    done = 1;
+}
+
 int main(void)
 {
+    // Initialization **************
+
+    struct sigaction action;
+    memset(&action, 0, sizeof(struct sigaction));
+    action.sa_handler = term;
+    sigaction(SIGTERM, &action, NULL);
+
     unsigned int core_cnt = 0;
     count_cores(&core_cnt);
 
@@ -26,29 +39,19 @@ int main(void)
 
     thrd_create(&thrd[0], Printer_thread, pd);
 
-    thrd_sleep(&(struct timespec){.tv_sec = 10}, NULL);
+    // ******************************
 
+    while (!done)
+    {
+        thrd_sleep(&(struct timespec){.tv_sec = 1}, NULL);
+    }
+
+    // cleanin up
+    printf("terminated\n");
     pd->finished = true;
 
     thrd_join(thrd[0], NULL);
 
-    // struct queue *q = queue_new();
-
-    // struct Analyzer *analyzer = Analyzer_new(core_cnt + 1, q);
-
-    // for (size_t i = 0; i < 10; i++)
-    // {
-    //     queue_push(q, Read_stat_file());
-
-    //     Analyzer_calc_usage(analyzer);
-
-    //     Print(analyzer);
-
-    //     thrd_sleep(&(struct timespec){.tv_sec = 1}, NULL); // sleep 1s
-    // }
-
-    // queue_free_all(q);
-    // Analyzer_free(analyzer);
     Program_data_free(pd);
     Printer_close();
 
