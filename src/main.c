@@ -6,37 +6,78 @@
 #include <stdbool.h>
 #include <threads.h>
 
+#include "Program_data.h"
 #include "Reader.h"
 #include "Queue.h"
 #include "Analyzer.h"
 #include "Printer.h"
 #include "core_counter.h"
+#include "Watchdog.h"
+
+// variable for SIGTERM signal
+static volatile sig_atomic_t done = 0;
+
+static void term(int signum)
+{
+    if (signum == SIGTERM)
+        done = 1;
+}
 
 int main(void)
 {
+    //************ Initialization **************
+
+    // for SIGTERM signal
+    struct sigaction action;
+    memset(&action, 0, sizeof(struct sigaction));
+    action.sa_handler = term;
+    sigaction(SIGTERM, &action, NULL);
+
     unsigned int core_cnt = 0;
-
-    count_cores(&core_cnt);
-
-    Printer_init();
-    struct queue *q = queue_new();
-
-    struct Analyzer *analyzer = Analyzer_new(core_cnt + 1, q);
-
-    for (size_t i = 0; i < 10; i++)
+    if (count_cores(&core_cnt) == -1)
     {
-        queue_push(q, Read_stat_file());
-
-        Analyzer_calc_usage(analyzer);
-
-        Print(analyzer);
-
-        thrd_sleep(&(struct timespec){.tv_sec = 1}, NULL); // sleep 1s
+        perror("Error while reading core number");
+        return -1;
     }
 
-    queue_free_all(q);
+    struct Analyzer *analyzer = Analyzer_new(core_cnt);
+    if (analyzer == NULL)
+    {
+        perror("Error while creating Analyzer");
+        return -1;
+    }
+
+    struct Program_data *pd = Program_data_new(core_cnt, 20, analyzer);
+    if (pd == NULL)
+    {
+        perror("ERROR while creating Program_data");
+        return -1;
+    }
+
+    thrd_t thrd[4];
+    thrd_create(&thrd[0], Printer_thread, pd);
+    thrd_create(&thrd[1], Reader_thread, pd);
+    thrd_create(&thrd[2], Analyzer_thread, pd);
+    thrd_create(&thrd[3], Watchdog_thread, pd);
+
+    // ******************************
+
+    while (!done && !pd->finished)
+    {
+        thrd_sleep(&(struct timespec){.tv_sec = 1}, NULL); // sleep for 1s
+    }
+
+    // cleaning up
+    printf("terminated\n");
+    pd->finished = true;
+
+    thrd_join(thrd[0], NULL);
+    thrd_join(thrd[1], NULL);
+    thrd_join(thrd[2], NULL);
+    thrd_join(thrd[3], NULL);
+
     Analyzer_free(analyzer);
-    Printer_close();
+    Program_data_free(pd);
 
     return 0;
 }

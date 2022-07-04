@@ -1,13 +1,20 @@
 
-#include "Reader.h"
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <threads.h>
+#include <stdatomic.h>
 
-char *Read_stat_file()
+#include "Reader.h"
+#include "Program_data.h"
+
+/**
+ * Reads cpu_usage data from /proc/stat,
+ * return string with data, function not responsible for freeing
+ */
+static char *Read_data()
 {
-    // opening the file
     FILE *file = fopen("/proc/stat", "r");
     if (file == NULL)
     {
@@ -62,4 +69,40 @@ char *Read_stat_file()
     fclose(file);
 
     return data;
+}
+
+int Reader_thread(void *pdv)
+{
+    struct Program_data *restrict pd = pdv;
+
+    while (!pd->finished)
+    {
+        char *data = Read_data();
+
+        if (data == NULL)
+        {
+            pd->finished = true;
+            return -1;
+        }
+
+        mtx_lock(&pd->mtx_queue);
+
+        while (!pd->finished && queue_get_length(pd->raw_data) >= pd->queue_max_length)
+        {
+            wait_cnd(&pd->cnd_queue_nonfull, &pd->mtx_queue);
+        }
+
+        // setting watchdog flag
+        pd->watchdog_flags[Reader_f] = true;
+
+        queue_push(pd->raw_data, data);
+
+        cnd_signal(&pd->cnd_queue_nonempty);
+        mtx_unlock(&pd->mtx_queue);
+
+        // thrd_yield();
+        thrd_sleep(&(struct timespec){.tv_nsec = 500000000}, NULL);
+    }
+
+    return 0;
 }
