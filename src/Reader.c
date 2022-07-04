@@ -1,13 +1,11 @@
+
+#include "Reader.h"
+
 #include <stdlib.h>
 #include <stdio.h>
-#include <signal.h>
 #include <string.h>
-#include <unistd.h>
-#include <stdbool.h>
 
-#define MAX_LINE_SIZE 128
-
-char *read_stat()
+char *Read_stat_file()
 {
     // opening the file
     FILE *file = fopen("/proc/stat", "r");
@@ -44,15 +42,15 @@ char *read_stat()
 
         // realocating memory for new data
         unsigned int buff_len = strlen(buffer);
-        char *foo = realloc(data, buff_len + data_size);
-        if (foo == NULL)
+        char *tem = realloc(data, buff_len + data_size);
+        if (tem == NULL)
         {
             perror("Could not reloocate the memory");
             fclose(file);
             free(data);
             return NULL;
         }
-        data = foo;
+        data = tem;
 
         // moving the iterator to the end of last data
         iterator = data + data_size;
@@ -64,15 +62,4 @@ char *read_stat()
     fclose(file);
 
     return data;
-}
-
-int main(int argc, char *argv[])
-{
-    char *raw_data = read_stat();
-
-    printf("%s", raw_data);
-
-    free(raw_data);
-
-    return 0;
 }

@@ -14,4 +14,13 @@ CMakeDoxyfile.in
 CMakeDoxygenDefaults.cmake
 CPackConfig.cmake
 CPackSourceConfig.cmake
+
 .vscode
+test/build/**
+
+.ninja_deps
+.ninja_log
+build.ninja
+rules.ninja
+
+
