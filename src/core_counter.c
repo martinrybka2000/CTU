@@ -9,7 +9,7 @@ int count_cores(unsigned int *core_cnt)
     FILE *file = fopen("/proc/cpuinfo", "r");
     if (file == NULL)
     {
-        perror("Could not open //proc//stat file");
+        perror("Could not open //proc//cpuinfo file");
         return -1;
     }
 

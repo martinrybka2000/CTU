@@ -4,9 +4,12 @@
 #include <stdbool.h>
 #include "Queue.h"
 
-// for now hard coded
+// hard coded
 #define NR_OF_COLUMNS 10
 
+/**
+ * enum for storing the names of columns in /proc/stat file
+ */
 enum columns
 {
     user_c = 0,

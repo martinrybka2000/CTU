@@ -3,7 +3,9 @@
 
 #define MAX_LINE_SIZE 128
 
-// function for redaing data from /proc/stat
+/**
+ * Function for reading cpu usage data from /proc/stat file
+ */
 char *Read_stat_file();
 
 #endif
