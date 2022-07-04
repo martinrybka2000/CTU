@@ -52,7 +52,7 @@ extern "C"
     char *queue_pop_head(struct queue *q);
 
     /**
-     * Destroys the queue and calls free() on every element.
+     * Destroys the queue and calls free() on every element and itself.
      * @param q queue created with queue_new()
      */
     void queue_free_all(struct queue *q);

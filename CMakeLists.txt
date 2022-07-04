@@ -8,6 +8,8 @@ set(CMAKE_C_STANDARD 11)
 find_package(Curses REQUIRED)
 include_directories(${CURSES_INCLUDE_DIR})
 
+find_package(Threads REQUIRED)
+
 add_executable(
     cut 
     
@@ -17,8 +19,10 @@ add_executable(
     src/Analyzer.c
     src/core_counter.c
     src/Printer.c
+    src/Program_data.c
     )
 
-target_link_libraries(cut ${CURSES_LIBRARIES})
+target_link_libraries(cut ${CURSES_LIBRARIES} Threads::Threads)
+
 target_include_directories(cut PRIVATE src)
 

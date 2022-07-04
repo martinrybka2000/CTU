@@ -1,13 +1,12 @@
 #ifndef PRINTER_H
 #define PRINTER_H
 
-#include "Analyzer.h"
-
 /**
  * Prints the cpu usage from analyzer. Should be called after Print_init()
  * @param analyzer pointer to the analyzer that stores data for cpu usage
+ * ! changed
  */
-void Print(struct Analyzer *analyzer);
+int Printer_thread(void *);
 
 /**
  *  Initializes the terminal. Should be called before Print()

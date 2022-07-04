@@ -2,6 +2,7 @@
 #include <ncurses.h>
 
 #include "Printer.h"
+#include "Program_data.h"
 
 void Printer_init()
 {
@@ -15,18 +16,30 @@ void Printer_close()
     endwin();
 }
 
-void Print(struct Analyzer *analyzer)
+int Printer_thread(void *pdv)
 {
-    if (analyzer != NULL)
+    struct Program_data *restrict pd = pdv;
+
+    static unsigned int test = 0;
+
+    while (!pd->finished)
     {
         clear();
 
-        printw("cpu usage: %.2f %%\n", analyzer->cpu_usage[0] * 100);
+        mtx_lock(&pd->mtx_cpu_usage);
 
-        for (size_t i = 1; i < analyzer->nr_of_cores; i++)
+        printw("cpu usage %d: %.2f %%\n", test++, pd->cpu_usage[0] * 100);
+        for (size_t i = 1; i < pd->core_cnt + 1; i++)
         {
-            printw(" cpu%d : %.2f %%\n", i - 1, analyzer->cpu_usage[i] * 100);
+            printw(" cpu%d : %.2f %%\n", i - 1, pd->cpu_usage[i] * 100);
         }
+
+        mtx_unlock(&pd->mtx_cpu_usage);
+
         refresh();
+
+        thrd_sleep(&(struct timespec){.tv_sec = 1}, NULL); // sleep 1s
     }
+
+    return 0;
 }
