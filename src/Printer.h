@@ -7,6 +7,6 @@ void Print(struct Analyzer *analyzer);
 
 void Printer_init();
 
-void Printed_close();
+void Printer_close();
 
 #endif

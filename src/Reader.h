@@ -4,6 +4,6 @@
 #define MAX_LINE_SIZE 128
 
 // function for redaing data from /proc/stat
-char *read_stat();
+char *Read_stat_file();
 
 #endif

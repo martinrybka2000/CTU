@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 
-char *read_stat()
+char *Read_stat_file()
 {
     // opening the file
     FILE *file = fopen("/proc/stat", "r");
@@ -42,15 +42,15 @@ char *read_stat()
 
         // realocating memory for new data
         unsigned int buff_len = strlen(buffer);
-        char *foo = realloc(data, buff_len + data_size);
-        if (foo == NULL)
+        char *tem = realloc(data, buff_len + data_size);
+        if (tem == NULL)
         {
             perror("Could not reloocate the memory");
             fclose(file);
             free(data);
             return NULL;
         }
-        data = foo;
+        data = tem;
 
         // moving the iterator to the end of last data
         iterator = data + data_size;

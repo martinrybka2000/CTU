@@ -10,12 +10,12 @@ struct Analyzer *Analyzer_new(unsigned long long nr_of_cores, struct queue *raw_
     struct Analyzer *analyzer = malloc(sizeof(struct Analyzer));
 
     analyzer->nr_of_cores = nr_of_cores;
-    analyzer->que_data = raw_data_queue;
+    analyzer->raw_data = raw_data_queue;
     analyzer->first_read = true;
 
     analyzer->cpu_usage = (double *)malloc(nr_of_cores * sizeof(double));
-    analyzer->prev = (unsigned long long *)malloc((nr_of_cores * NR_OF_COLUMNS) * sizeof(unsigned long long));
-    analyzer->now = (unsigned long long *)malloc((nr_of_cores * NR_OF_COLUMNS) * sizeof(unsigned long long));
+    analyzer->prev_data = (unsigned long long *)malloc((nr_of_cores * NR_OF_COLUMNS) * sizeof(unsigned long long));
+    analyzer->current_data = (unsigned long long *)malloc((nr_of_cores * NR_OF_COLUMNS) * sizeof(unsigned long long));
 
     for (size_t i = 0; i < nr_of_cores; i++)
     {
@@ -24,8 +24,8 @@ struct Analyzer *Analyzer_new(unsigned long long nr_of_cores, struct queue *raw_
 
     for (size_t i = 0; i < nr_of_cores * NR_OF_COLUMNS; i++)
     {
-        analyzer->now[i] = 0;
-        analyzer->prev[i] = 0;
+        analyzer->current_data[i] = 0;
+        analyzer->prev_data[i] = 0;
     }
 
     return analyzer;
@@ -34,15 +34,15 @@ struct Analyzer *Analyzer_new(unsigned long long nr_of_cores, struct queue *raw_
 void Analyzer_free(struct Analyzer *analyzer)
 {
     free(analyzer->cpu_usage);
-    free(analyzer->now);
-    free(analyzer->prev);
+    free(analyzer->current_data);
+    free(analyzer->prev_data);
 
     free(analyzer);
 }
 
 void Analyzer_calc_usage(struct Analyzer *analyzer)
 {
-    if (queue_get_length(analyzer->que_data) > 0)
+    if (queue_get_length(analyzer->raw_data) > 0)
     {
         char str[7];
         unsigned diff;
@@ -59,7 +59,7 @@ void Analyzer_calc_usage(struct Analyzer *analyzer)
         unsigned long long totald;
         unsigned long long idled;
 
-        char *ptr = queue_peek_head(analyzer->que_data);
+        char *ptr = queue_peek_head(analyzer->raw_data);
 
         if (analyzer->first_read)
         {
@@ -70,8 +70,8 @@ void Analyzer_calc_usage(struct Analyzer *analyzer)
                 sscanf(ptr,
                        "%s %16llu %16llu %16llu %16llu %16llu %16llu %16llu %16llu %16llu %16llu",
                        str,
-                       &analyzer->prev[diff + user_c], &analyzer->prev[diff + nice_c], &analyzer->prev[diff + system_c], &analyzer->prev[diff + iowat_c], &analyzer->prev[diff + idle_c],
-                       &analyzer->prev[diff + irq_c], &analyzer->prev[diff + softirq_c], &analyzer->prev[diff + steal_c], &analyzer->prev[diff + quest_c], &analyzer->prev[diff + quest_nice_c]);
+                       &analyzer->prev_data[diff + user_c], &analyzer->prev_data[diff + nice_c], &analyzer->prev_data[diff + system_c], &analyzer->prev_data[diff + iowat_c], &analyzer->prev_data[diff + idle_c],
+                       &analyzer->prev_data[diff + irq_c], &analyzer->prev_data[diff + softirq_c], &analyzer->prev_data[diff + steal_c], &analyzer->prev_data[diff + quest_c], &analyzer->prev_data[diff + quest_nice_c]);
 
                 ptr = strchr(ptr, '\n') + 1;
             }
@@ -87,14 +87,14 @@ void Analyzer_calc_usage(struct Analyzer *analyzer)
                 sscanf(ptr,
                        "%s %16llu %16llu %16llu %16llu %16llu %16llu %16llu %16llu %16llu %16llu",
                        str,
-                       &analyzer->now[diff + user_c], &analyzer->now[diff + nice_c], &analyzer->now[diff + system_c], &analyzer->now[diff + iowat_c], &analyzer->now[diff + idle_c],
-                       &analyzer->now[diff + irq_c], &analyzer->now[diff + softirq_c], &analyzer->now[diff + steal_c], &analyzer->now[diff + quest_c], &analyzer->now[diff + quest_nice_c]);
+                       &analyzer->current_data[diff + user_c], &analyzer->current_data[diff + nice_c], &analyzer->current_data[diff + system_c], &analyzer->current_data[diff + iowat_c], &analyzer->current_data[diff + idle_c],
+                       &analyzer->current_data[diff + irq_c], &analyzer->current_data[diff + softirq_c], &analyzer->current_data[diff + steal_c], &analyzer->current_data[diff + quest_c], &analyzer->current_data[diff + quest_nice_c]);
 
-                PrevIdle = analyzer->prev[diff + idle_c] + analyzer->prev[diff + iowat_c];
-                Idle = analyzer->now[diff + idle_c] + analyzer->now[diff + iowat_c];
+                PrevIdle = analyzer->prev_data[diff + idle_c] + analyzer->prev_data[diff + iowat_c];
+                Idle = analyzer->current_data[diff + idle_c] + analyzer->current_data[diff + iowat_c];
 
-                PrevNonIdle = analyzer->prev[diff + user_c] + analyzer->prev[diff + nice_c] + analyzer->prev[diff + system_c] + analyzer->prev[diff + irq_c] + analyzer->prev[diff + softirq_c] + analyzer->prev[diff + steal_c];
-                NonIdle = analyzer->now[diff + user_c] + analyzer->now[diff + nice_c] + analyzer->now[diff + system_c] + analyzer->now[diff + irq_c] + analyzer->now[diff + softirq_c] + analyzer->now[diff + steal_c];
+                PrevNonIdle = analyzer->prev_data[diff + user_c] + analyzer->prev_data[diff + nice_c] + analyzer->prev_data[diff + system_c] + analyzer->prev_data[diff + irq_c] + analyzer->prev_data[diff + softirq_c] + analyzer->prev_data[diff + steal_c];
+                NonIdle = analyzer->current_data[diff + user_c] + analyzer->current_data[diff + nice_c] + analyzer->current_data[diff + system_c] + analyzer->current_data[diff + irq_c] + analyzer->current_data[diff + softirq_c] + analyzer->current_data[diff + steal_c];
 
                 PrevTotal = PrevIdle + PrevNonIdle;
                 Total = Idle + NonIdle;
@@ -111,9 +111,9 @@ void Analyzer_calc_usage(struct Analyzer *analyzer)
             // coping actual to prev reads
             for (size_t i = 0; i < analyzer->nr_of_cores * NR_OF_COLUMNS; i++)
             {
-                analyzer->prev[i] = analyzer->now[i];
+                analyzer->prev_data[i] = analyzer->current_data[i];
             }
         }
-        queue_pop_free_head(analyzer->que_data);
+        queue_pop_free_head(analyzer->raw_data);
     }
 }

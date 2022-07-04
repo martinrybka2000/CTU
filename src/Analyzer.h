@@ -5,7 +5,6 @@
 #include "Queue.h"
 
 // for now hard coded
-#define NR_OF_CORES 8
 #define NR_OF_COLUMNS 10
 
 enum columns
@@ -27,10 +26,10 @@ struct Analyzer
     unsigned int nr_of_cores;
     double *cpu_usage;
 
-    struct queue *que_data;
+    struct queue *raw_data;
 
-    unsigned long long *prev;
-    unsigned long long *now;
+    unsigned long long *prev_data;
+    unsigned long long *current_data;
 
     bool first_read;
 };

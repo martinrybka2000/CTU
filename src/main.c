@@ -25,7 +25,7 @@ int main(void)
 
     for (size_t i = 0; i < 10; i++)
     {
-        queue_push(q, read_stat());
+        queue_push(q, Read_stat_file());
 
         Analyzer_calc_usage(analyzer);
 
@@ -36,7 +36,7 @@ int main(void)
 
     queue_free_all(q);
     Analyzer_free(analyzer);
-    Printed_close();
+    Printer_close();
 
     return 0;
 }

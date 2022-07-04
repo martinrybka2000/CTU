@@ -10,7 +10,7 @@ void Printer_init()
     refresh();
 }
 
-void Printed_close()
+void Printer_close()
 {
     endwin();
 }
