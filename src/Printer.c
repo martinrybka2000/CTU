@@ -29,7 +29,7 @@ int Printer_thread(void *pdv)
         mtx_lock(&pd->mtx_cpu_usage);
 
         printw("cpu usage %d: %.2f %%\n", test++, pd->cpu_usage[0] * 100);
-        for (size_t i = 1; i < pd->core_cnt + 1; i++)
+        for (int i = 1; i < pd->core_cnt + 1; i++)
         {
             printw(" cpu%d : %.2f %%\n", i - 1, pd->cpu_usage[i] * 100);
         }

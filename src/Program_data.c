@@ -3,7 +3,7 @@
 
 #include "Program_data.h"
 
-struct Program_data *Program_data_new(unsigned int core_cnt)
+struct Program_data *Program_data_new(unsigned int core_cnt, unsigned int queue_max_length, struct Analyzer *analyzer_data)
 {
     struct Program_data *pd = malloc(sizeof(struct Program_data));
     struct queue *q = queue_new();
@@ -16,20 +16,27 @@ struct Program_data *Program_data_new(unsigned int core_cnt)
 
     pd->raw_data = q;
     pd->cpu_usage = cpu_usage;
+    pd->analyzer_data = analyzer_data;
 
     pd->finished = false;
     pd->core_cnt = core_cnt;
+    pd->queue_max_length = queue_max_length;
 
     if (mtx_init(&(pd->mtx_queue), mtx_plain) == thrd_error)
     {
         return NULL;
     }
-    if (mtx_init(&(pd->mtx_queue), mtx_plain) == thrd_error)
+    if (mtx_init(&(pd->mtx_cpu_usage), mtx_plain) == thrd_error)
     {
         return NULL;
     }
 
-    int err = cnd_init(&(pd->cnd_queue));
+    int err = cnd_init(&(pd->cnd_queue_nonempty));
+    if (err == thrd_error || err == thrd_nomem)
+    {
+        return NULL;
+    }
+    err = cnd_init(&(pd->cnd_queue_nonfull));
     if (err == thrd_error || err == thrd_nomem)
     {
         return NULL;
@@ -53,10 +60,19 @@ int Program_data_free(struct Program_data *pd)
         mtx_destroy(&(pd->mtx_queue));
         mtx_destroy(&(pd->mtx_cpu_usage));
 
-        cnd_destroy(&(pd->cnd_queue));
+        cnd_destroy(&(pd->cnd_queue_nonempty));
+        cnd_destroy(&(pd->cnd_queue_nonfull));
 
         free(pd);
         return 0;
     }
     return -1;
+}
+
+int wait_cnd(cnd_t *cnd, mtx_t *mtx)
+{
+    struct timespec now;
+    timespec_get(&now, TIME_UTC);
+    now.tv_sec += 1;
+    return cnd_timedwait(cnd, mtx, &now);
 }

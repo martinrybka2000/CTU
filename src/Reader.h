@@ -6,6 +6,6 @@
 /**
  * Function for reading cpu usage data from /proc/stat file
  */
-char *Read_stat_file();
+int Reader_thread(void *);
 
 #endif
