@@ -20,6 +20,7 @@ add_executable(
     src/core_counter.c
     src/Printer.c
     src/Program_data.c
+    src/Watchdog.c
     )
 
 target_link_libraries(cut ${CURSES_LIBRARIES} Threads::Threads)

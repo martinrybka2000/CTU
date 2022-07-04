@@ -12,6 +12,7 @@
 #include "Analyzer.h"
 #include "Printer.h"
 #include "core_counter.h"
+#include "Watchdog.h"
 
 // variable for SIGTERM signal
 volatile sig_atomic_t done = 0;
