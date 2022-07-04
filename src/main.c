@@ -23,18 +23,35 @@ void term(int signum)
 
 int main(void)
 {
-    // Initialization **************
+    //************ Initialization **************
 
+    // for SIGTERM signal
     struct sigaction action;
     memset(&action, 0, sizeof(struct sigaction));
     action.sa_handler = term;
     sigaction(SIGTERM, &action, NULL);
 
     unsigned int core_cnt = 0;
-    count_cores(&core_cnt);
+    if (count_cores(&core_cnt) == -1)
+    {
+        perror("Error while reading core number");
+        return -1;
+    }
 
     struct Analyzer *analyzer = Analyzer_new(core_cnt);
+    if (analyzer == NULL)
+    {
+        perror("Error while creating Analyzer");
+        return -1;
+    }
+
     struct Program_data *pd = Program_data_new(core_cnt, 20, analyzer);
+    if (pd == NULL)
+    {
+        perror("ERROR while creating Program_data");
+        return -1;
+    }
+
     Printer_init();
 
     thrd_t thrd[3];
@@ -46,7 +63,7 @@ int main(void)
 
     while (!done && !pd->finished)
     {
-        thrd_sleep(&(struct timespec){.tv_sec = 1}, NULL);
+        thrd_sleep(&(struct timespec){.tv_sec = 1}, NULL); // sleep for 1s
     }
 
     // cleaning up

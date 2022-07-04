@@ -4,7 +4,7 @@
 #define MAX_LINE_SIZE 128
 
 /**
- * Function for reading cpu usage data from /proc/stat file
+ * Thread function for reading cpu_usage
  */
 int Reader_thread(void *);
 

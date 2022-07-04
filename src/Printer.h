@@ -2,9 +2,8 @@
 #define PRINTER_H
 
 /**
- * Prints the cpu usage from analyzer. Should be called after Print_init()
- * @param analyzer pointer to the analyzer that stores data for cpu usage
- * ! changed
+ * Thread function for printing cpu_usage
+ * ! memory leak becouse of ncurses usage
  */
 int Printer_thread(void *);
 
