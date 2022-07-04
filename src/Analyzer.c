@@ -52,7 +52,7 @@ int Analyzer_thread(void *pdv)
     struct Program_data *restrict pd = pdv;
 
     char str[7];
-    unsigned diff;
+    unsigned long diff;
 
     // variables for calculating cpu usage
     unsigned long long PrevIdle;

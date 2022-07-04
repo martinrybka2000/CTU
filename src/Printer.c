@@ -30,7 +30,7 @@ int Printer_thread(void *pdv)
         pd->watchdog_flags[Printer_f] = true;
 
         printw("cpu usage: %.2f %%\n", pd->cpu_usage[0] * 100);
-        for (int i = 1; i < pd->core_cnt + 1; i++)
+        for (unsigned int i = 1; i < pd->core_cnt + 1; i++)
         {
             printw(" cpu%d : %.2f %%\n", i - 1, pd->cpu_usage[i] * 100);
         }

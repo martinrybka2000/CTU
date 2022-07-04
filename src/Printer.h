@@ -10,11 +10,11 @@ int Printer_thread(void *);
 /**
  *  Initializes the terminal. Should be called before Print()
  */
-void Printer_init();
+void Printer_init(void);
 
 /**
  *  Clears the terminal to the state before lauching
  */
-void Printer_close();
+void Printer_close(void);
 
 #endif

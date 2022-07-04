@@ -15,11 +15,12 @@
 #include "Watchdog.h"
 
 // variable for SIGTERM signal
-volatile sig_atomic_t done = 0;
+static volatile sig_atomic_t done = 0;
 
-void term(int signum)
+static void term(int signum)
 {
-    done = 1;
+    if (signum == SIGTERM)
+        done = 1;
 }
 
 int main(void)

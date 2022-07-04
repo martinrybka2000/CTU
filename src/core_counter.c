@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "core_counter.h"
+
 int count_cores(unsigned int *core_cnt)
 {
     *core_cnt = 0;

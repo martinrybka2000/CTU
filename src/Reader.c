@@ -10,10 +10,10 @@
 #include "Program_data.h"
 
 /**
- * Reads cpu_usage data from /proc/stat
- * @param return string with data, function not responsible for freeing
+ * Reads cpu_usage data from /proc/stat,
+ * return string with data, function not responsible for freeing
  */
-char *Read_data()
+static char *Read_data()
 {
     FILE *file = fopen("/proc/stat", "r");
     if (file == NULL)

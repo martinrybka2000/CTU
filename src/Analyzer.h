@@ -38,9 +38,9 @@ struct Analyzer
 };
 
 /**
- * Constructor for Analyzer data
+ * Constructor for Analyzer data,
+ * return newly constructed Analyzer_data
  * @param nr_of_cores number of cores in the system
- * @param return newly constructed Analyzer_data
  */
 struct Analyzer *Analyzer_new(unsigned long long nr_of_cores);
 

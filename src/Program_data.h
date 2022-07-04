@@ -52,11 +52,11 @@ struct Program_data
 };
 
 /**
- *  Constructor for the Program data
+ *  Constructor for the Program data,
+ * return newly allocated Program_data
  * @param core_cnt number of cores in the system
  * @param queue_max_length specifies the maximum length of the queue
  * @param analyzer_data should be allocated before, data for Analyzer to use
- * @param return newly allocated Program_data
  */
 struct Program_data *Program_data_new(unsigned int core_cnt, unsigned int queue_max_length, struct Analyzer *analyzer_data);
 

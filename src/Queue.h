@@ -23,7 +23,7 @@ extern "C"
     /**
      * Returns a pointer to newly created queue
      */
-    struct queue *queue_new();
+    struct queue *queue_new(void);
 
     /**
      * Ads new data to the tail

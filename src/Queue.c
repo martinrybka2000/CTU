@@ -9,7 +9,7 @@ struct node
     struct node *next;
 };
 
-struct node *new_node(char *data)
+static struct node *new_node(char *data)
 {
     struct node *n;
     n = (struct node *)malloc(sizeof(struct node));
