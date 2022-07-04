@@ -5,9 +5,6 @@ project(cut VERSION 1.0
 
 set(CMAKE_C_STANDARD 11)
 
-find_package(Curses REQUIRED)
-include_directories(${CURSES_INCLUDE_DIR})
-
 find_package(Threads REQUIRED)
 
 add_executable(
@@ -23,7 +20,7 @@ add_executable(
     src/Watchdog.c
     )
 
-target_link_libraries(cut ${CURSES_LIBRARIES} Threads::Threads)
+target_link_libraries(cut Threads::Threads)
 
 target_include_directories(cut PRIVATE src)
 
