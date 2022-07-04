@@ -12,6 +12,7 @@
 #include "Printer.h"
 #include "core_counter.h"
 
+//
 int main(void)
 {
     unsigned int core_cnt = 0;
