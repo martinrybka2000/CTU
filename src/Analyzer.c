@@ -65,7 +65,7 @@ void Analyzer_calc_usage(struct Analyzer *analyzer)
         {
             for (size_t i = 0; i < analyzer->nr_of_cores; i++)
             {
-                diff = analyzer->nr_of_cores * i;
+                diff = NR_OF_COLUMNS * i;
 
                 sscanf(ptr,
                        "%s %16llu %16llu %16llu %16llu %16llu %16llu %16llu %16llu %16llu %16llu",
@@ -82,7 +82,7 @@ void Analyzer_calc_usage(struct Analyzer *analyzer)
         {
             for (size_t i = 0; i < analyzer->nr_of_cores; i++)
             {
-                diff = analyzer->nr_of_cores * i;
+                diff = NR_OF_COLUMNS * i;
 
                 sscanf(ptr,
                        "%s %16llu %16llu %16llu %16llu %16llu %16llu %16llu %16llu %16llu %16llu",
@@ -113,8 +113,7 @@ void Analyzer_calc_usage(struct Analyzer *analyzer)
             {
                 analyzer->prev[i] = analyzer->now[i];
             }
-
-            queue_pop_free_head(analyzer->que_data);
         }
+        queue_pop_free_head(analyzer->que_data);
     }
 }
