@@ -22,6 +22,11 @@ struct Program_data *Program_data_new(unsigned int core_cnt, unsigned int queue_
     pd->core_cnt = core_cnt;
     pd->queue_max_length = queue_max_length;
 
+    for (size_t i = 0; i < NR_OF_WATCHDOG_THREADS; i++)
+    {
+        pd->watchdog_flags[i] = true;
+    }
+
     if (mtx_init(&(pd->mtx_queue), mtx_plain) == thrd_error)
     {
         return NULL;

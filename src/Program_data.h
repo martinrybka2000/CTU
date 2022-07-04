@@ -7,6 +7,16 @@
 #include "Queue.h"
 #include "Analyzer.h"
 
+// number of threads for Wachdog to track
+#define NR_OF_WATCHDOG_THREADS 3
+
+enum
+{
+    Reader_f,
+    Analyzer_f,
+    Printer_f
+};
+
 /**
  * Structure for holding program data
  * @param raw_data queue for holding data read from /proc/stat
@@ -19,11 +29,13 @@
  * @param finished flag for indicating the end of the program
  * @param core_cnt number of cores in the system
  * @param analyzer_data data for the Analyzer to use
+ * @param watchdog_flags flags for watchdog tracking
  */
 struct Program_data
 {
     struct queue *raw_data;
     atomic_uint queue_max_length;
+
     mtx_t mtx_queue;
     cnd_t cnd_queue_nonempty;
     cnd_t cnd_queue_nonfull;
@@ -35,6 +47,8 @@ struct Program_data
     atomic_uint core_cnt;
 
     struct Analyzer *analyzer_data;
+
+    atomic_bool watchdog_flags[NR_OF_WATCHDOG_THREADS];
 };
 
 /**

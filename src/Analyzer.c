@@ -80,6 +80,9 @@ int Analyzer_thread(void *pdv)
         if (queue_get_length(pd->raw_data) == 0)
             return -1;
 
+        // setting watchdog flag
+        pd->watchdog_flags[Analyzer_f] = true;
+
         char *ptr = queue_peek_head(pd->raw_data);
 
         if (ptr == NULL)

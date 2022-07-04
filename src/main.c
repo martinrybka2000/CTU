@@ -55,10 +55,11 @@ int main(void)
 
     Printer_init();
 
-    thrd_t thrd[3];
+    thrd_t thrd[4];
     thrd_create(&thrd[0], Printer_thread, pd);
     thrd_create(&thrd[1], Reader_thread, pd);
     thrd_create(&thrd[2], Analyzer_thread, pd);
+    thrd_create(&thrd[3], Watchdog_thread, pd);
 
     // ******************************
 
@@ -74,6 +75,7 @@ int main(void)
     thrd_join(thrd[0], NULL);
     thrd_join(thrd[1], NULL);
     thrd_join(thrd[2], NULL);
+    thrd_join(thrd[3], NULL);
 
     Analyzer_free(analyzer);
     Program_data_free(pd);

@@ -26,6 +26,9 @@ int Printer_thread(void *pdv)
 
         mtx_lock(&pd->mtx_cpu_usage);
 
+        // setting watchdog flag
+        pd->watchdog_flags[Printer_f] = true;
+
         printw("cpu usage: %.2f %%\n", pd->cpu_usage[0] * 100);
         for (int i = 1; i < pd->core_cnt + 1; i++)
         {

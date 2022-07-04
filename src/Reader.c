@@ -92,6 +92,9 @@ int Reader_thread(void *pdv)
             wait_cnd(&pd->cnd_queue_nonfull, &pd->mtx_queue);
         }
 
+        // setting watchdog flag
+        pd->watchdog_flags[Reader_f] = true;
+
         queue_push(pd->raw_data, data);
 
         cnd_signal(&pd->cnd_queue_nonempty);
