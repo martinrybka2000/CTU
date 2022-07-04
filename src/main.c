@@ -54,8 +54,6 @@ int main(void)
         return -1;
     }
 
-    Printer_init();
-
     thrd_t thrd[4];
     thrd_create(&thrd[0], Printer_thread, pd);
     thrd_create(&thrd[1], Reader_thread, pd);
@@ -80,7 +78,6 @@ int main(void)
 
     Analyzer_free(analyzer);
     Program_data_free(pd);
-    Printer_close();
 
     return 0;
 }
