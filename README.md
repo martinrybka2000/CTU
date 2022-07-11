@@ -1,7 +1,5 @@
 # CTU
 
-## Zadanie rekrutacyjne CUT - cpu usage tracker, Maj 2022
-
 ## Usage
 
 For launching the program clone the repository and open the /build directory  
